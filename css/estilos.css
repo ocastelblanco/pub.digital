@@ -1,0 +1,13 @@
+@charset "utf-8";
+/* CSS Document */
+
+#contenido canvas {
+	border: solid black thin;
+	background: url(../icons/preLoader.gif) 50% 50% no-repeat;
+}
+nav#paginas a{
+	float: left;
+}
+nav#paginas {
+	margin-left: 50%;
+}

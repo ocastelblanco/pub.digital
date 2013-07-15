@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns = "http://www.w3.org/ns/widgets"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+        id        = "com.olivercastelblanco.pub.digital"
+        versionCode="01" 
+        version   = "0.0.1">
+
+	<preference name="phonegap-version" value="2.9.0" />
+	<preference name="orientation" value="landscape" />
+	<preference name="target-device" value="tablet" />
+	<preference name="fullscreen" value="true" />
+	
+	<icon src="icons/ldpi.png" gap:platform="android" gap:density="ldpi" />
+	<icon src="icons/mdpi.png" gap:platform="android" gap:density="mdpi" />
+	<icon src="icons/hdpi.png" gap:platform="android" gap:density="hdpi" />
+	<icon src="icons/xhdpi.png" gap:platform="android" gap:density="xhdpi" />
+	
+	<gap:splash src="splash/ldpi.png" gap:platform="android" gap:density="ldpi" />
+	<gap:splash src="splash/mdpi.png" gap:platform="android" gap:density="mdpi" />
+	<gap:splash src="splash/hdpi.png" gap:platform="android" gap:density="hdpi" />
+	<gap:splash src="splash/xhdpi.png" gap:platform="android" gap:density="xhdpi" />
+	
+    <name>Publicaciones</name>
+
+    <description>
+        Aplicación para la distribución digital de publicaciones académicas. 
+    </description>
+
+    <author href="http://www.olivercastelblanco.com/" email="ocastelblanco@gmail.com">
+        Oliver Castelblanco M.
+    </author>
+
+</widget>
