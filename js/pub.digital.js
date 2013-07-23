@@ -9,7 +9,22 @@ var anchoVentana = window.innerWidth*0.99;
 var altoVentana = window.innerHeight*0.99;
 $(document).on('pageinit', '#vistaPDF', function() {
 	cargaPDF(nombrePDF);
+	document.addEventListener("backbutton", function() {
+		if ( $('.ui-page-active').attr('id') == 'inicio') {
+			salirAppPopup();
+		} else {
+			history.back();             
+		}
+	}, false);
 });
+function salirAppPopup() {
+	navigator.notification.confirm('¿Desea cerrar la aplicación?', function(button) {
+		if (button == 2) {
+			navigator.app.exitApp();
+		} 
+	}, 'Salir de la aplicación', 'Cancelar,Salir');  
+	return false;
+}
 function cargaPDF(nombre) {
 	PDFJS.getDocument('pdf/'+nombre).then(function(pdf) {
 		totalPag = pdf.pdfInfo.numPages;
@@ -29,8 +44,11 @@ function creaPaginas(pdf, numPagina, numHoja, hojaNueva) {
 		$('#vistaPDF [data-role="header"] h3').html(nombrePDF);
 		$('#vistaPDF [data-role="footer"] h3').html('Total de páginas: '+totalPag);
 		$('#vistaPDF #contenido').append('<a href="#'+nombreHoja+'" class="vinculoHoja"><div id="numerosPagina"><span class="precargando"></span><span class="precargando"></span></div><div id="numerosHoja">Hoja '+numHoja+'</div></a>');
-		$('#'+nombreHoja+' [data-role="header"]').html('<a href="#vistaPDF" data-role="button" data-icon="home" data-iconpos="notext">Inicio</a><h3>'+nombrePDF+'</h3>');
+		$('#'+nombreHoja+' [data-role="header"]').html('<a href="#vistaPDF" id="volverInicio" data-role="button" data-icon="home" data-iconpos="notext">Inicio</a><h3>'+nombrePDF+'</h3><a href="#" id="cerrarApp" data-role="button" data-icon="delete" data-iconpos="notext">Cerrar</a>');
 		$('#'+nombreHoja+' [data-role="footer"]').html('<nav id="paginas"></nav>');
+		$('#cerrarApp').click(function(e) {
+            salirAppPopup();
+        });
 		if (numHoja < (totalPag/pagXpag)) {
 			$('#'+nombreHoja+' [data-role="footer"] nav').append('<a href="#PDF'+(numHoja+1)+'" data-role="button" data-icon="arrow-r" data-iconpos="notext" data-transition="slide">Siguiente</a>');
 			$('#'+nombreHoja).on('swipeleft', function() {

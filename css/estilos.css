@@ -4,6 +4,12 @@
 #contenido canvas {
 	border: solid black thin;
 }
+#volverInicio {
+	float: left;
+}
+#cerrarApp {
+	float: right;
+}
 a.vinculoHoja {
 	display: block;
 	float: left;
