@@ -17,45 +17,49 @@ function cargaPDF(nombre) {
 			pagXpag = 2;
 		}
 		var numPagina = 1;
-		for (var i = 0; i<(totalPag/pagXpag); i++) {
-			var numHoja = i+1;
-			var nombreHoja = 'PDF'+numHoja;
-			var cont = '<div data-role="page" id="'+nombreHoja+'"><div data-role="header" data-id="encPag" data-fullscreen="true" data-position="fixed"><h3>Titulo del libro</h3></div><div data-role="content" id="contenido"></div><div data-role="footer" data-id="navPag" data-fullscreen="true" data-position="fixed"><h3>Pagina</h3></div></div>';
-			$('body').append(cont);
-			$('#vistaPDF #contenido').append('<a href="#'+nombreHoja+'" data-role="button" data-inline="true">Hoja '+numHoja+'</a>');
-			for (var g=0;g<pagXpag;g++) {
-				if (numPagina <= totalPag) {
-					var nombrePagina = 'pag'+numPagina;
-					$('#'+nombreHoja+' #contenido').append('<canvas id="'+nombreHoja+nombrePagina+'">');
-					cargaPagina(pdf, nombreHoja+nombrePagina, numPagina, pagXpag, numHoja);
-					numPagina++;
-				}
-			}
-			$('#'+nombreHoja+' [data-role="header"]').html('<a href="#vistaPDF" data-role="button" data-icon="home" data-iconpos="notext">Inicio</a><h3>Titulo del libro</h3>');
-			$('#'+nombreHoja+' [data-role="footer"]').html('<nav id="paginas"><a href="#PDF'+(Number(nombreHoja.substr(3))-1)+'" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-transition="slide" data-direction="reverse">Anterior</a><a href="#PDF'+(Number(nombreHoja.substr(3))+1)+'" data-role="button" data-icon="arrow-r" data-iconpos="notext" data-transition="slide">Siguiente</a></nav>');
+		var numHoja = 1;
+		creaPaginas(pdf, numPagina, numHoja, true);
+	});
+}
+function creaPaginas(pdf, numPagina, numHoja, hojaNueva) {
+	var nombreHoja = 'PDF'+numHoja;
+	if (hojaNueva) {
+		var cont = '<div data-role="page" id="'+nombreHoja+'"><div data-role="header" data-fullscreen="true" data-position="fixed"></div><div data-role="content" id="contenido"></div><div data-role="footer" data-id="navPag" data-fullscreen="true" data-position="fixed"></div></div>';
+		$('body').append(cont);
+		$('#vistaPDF [data-role="header"] h3').html(nombrePDF);
+		$('#vistaPDF [data-role="footer"] h3').html('Total de páginas: '+totalPag);
+		$('#vistaPDF #contenido').append('<a href="#'+nombreHoja+'" class="vinculoHoja"><div id="numerosPagina"><span class="precargando"></span><span class="precargando"></span></div><div id="numerosHoja">Hoja '+numHoja+'</div></a>');
+		$('#'+nombreHoja+' [data-role="header"]').html('<a href="#vistaPDF" data-role="button" data-icon="home" data-iconpos="notext">Inicio</a><h3>'+nombrePDF+'</h3>');
+		$('#'+nombreHoja+' [data-role="footer"]').html('<nav id="paginas"></nav>');
+		if (numHoja < (totalPag/pagXpag)) {
+			$('#'+nombreHoja+' [data-role="footer"] nav').append('<a href="#PDF'+(numHoja+1)+'" data-role="button" data-icon="arrow-r" data-iconpos="notext" data-transition="slide">Siguiente</a>');
 			$('#'+nombreHoja).on('swipeleft', function() {
 				var destino = "PDF"+(Number($(this).attr('id').substr(3))+1);
 				$.mobile.changePage("#"+destino, {
 					transition: "slide"
 				});
 			});
+		}
+		if (numHoja > 1) {
+			$('#'+nombreHoja+' [data-role="footer"] nav').prepend('<a href="#PDF'+(numHoja-1)+'" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-transition="slide" data-direction="reverse">Anterior</a>');
 			$('#'+nombreHoja).on('swiperight', function() {
 				var destino = "PDF"+(Number($(this).attr('id').substr(3))-1);
 				$.mobile.changePage("#"+destino, {
 					transition: "slide",
 					reverse: true
 				});
-			})
+			});
 		}
-		$('#vistaPDF #contenido').trigger('create');
-	});
-}
-function cargaPagina(pdf, nomCanvas, pag, paginas, hoja) {
-	pdf.getPage(pag).then(function(page) {
+	}
+	//$('#vistaPDF #contenido').trigger('create');
+	var nombrePagina = 'pag'+numPagina;
+	var nomCanvas = nombreHoja+nombrePagina;
+	$('#'+nombreHoja+' #contenido').append('<canvas id="'+nomCanvas+'" class="precargando">');
+	pdf.getPage(numPagina).then(function(page) {
 		var canvas = document.getElementById(nomCanvas);
 		var context = canvas.getContext('2d');
 		var viewport = page.getViewport(1); //El número dentro del paréntesis es la escala
-		var scale = (anchoVentana/paginas)/viewport.width;
+		var scale = (anchoVentana/pagXpag)/viewport.width;
 		if (scale*viewport.height > (altoVentana)) {
 			scale = altoVentana/viewport.height;
 		}
@@ -66,12 +70,29 @@ function cargaPagina(pdf, nomCanvas, pag, paginas, hoja) {
 			canvasContext: context,
 			viewport: viewport
 		};
-		page.render(renderContext);
 		$('#'+nomCanvas).css('margin-top', (window.innerHeight-viewport.height)/2);
-		if((pag/hoja) == paginas) {
-			$('#PDF'+hoja+'pag'+(pag-1)).css('margin-left', (window.innerWidth-(viewport.width*paginas))/2);
-		} else if (pag == totalPag) {
+		if((numPagina/numHoja) == pagXpag) {
+			$('#PDF'+numHoja+'pag'+(numPagina-1)).css('margin-left', (window.innerWidth-(viewport.width*pagXpag))/2);
+		} else if (numPagina == totalPag) {
 			$('#'+nomCanvas).css('margin-left', (window.innerWidth-viewport.width)/2);
 		}
+		page.render(renderContext).then(function() {
+			$('#'+nomCanvas).removeClass('precargando');
+			$('#vistaPDF #precarga').html('Cargando hoja '+numHoja+' de '+Math.ceil(totalPag/pagXpag));
+			if (!hojaNueva) {
+				numHoja++;
+				$('a.vinculoHoja[href="#'+nombreHoja+'"] #numerosPagina span:last-child').html(numPagina).removeClass('precargando');
+			} else {
+				$('a.vinculoHoja[href="#'+nombreHoja+'"] #numerosPagina span:first-child').html(numPagina).removeClass('precargando');
+			}
+			numPagina++;
+			if (numPagina <= totalPag) {
+				creaPaginas(pdf, numPagina, numHoja, !hojaNueva);
+			} else {
+				$('#vistaPDF #precarga').remove();
+				$('a.vinculoHoja #numerosPagina span').removeClass('precargando');
+			}
+		});
 	});
+
 }

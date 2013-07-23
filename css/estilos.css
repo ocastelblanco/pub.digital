@@ -3,7 +3,43 @@
 
 #contenido canvas {
 	border: solid black thin;
+}
+a.vinculoHoja {
+	display: block;
+	float: left;
+	width: 4.5em;
+	height: 5em;
+	color: #000;
+	text-decoration: none;
+	border: solid black thin;
+	text-align: center;
+	margin-right: 1em;
+	margin-top: 1em;
+	background-color: #dddddd;
+	box-shadow: 0.2em 0.2em rgba(0, 0, 0, 0.3);
+}
+.precargando {
 	background: url(../icons/preLoader.gif) 50% 50% no-repeat;
+}
+a.vinculoHoja #numerosPagina {
+	font-size: 1.5em;
+	height: 2.25em;
+}
+a.vinculoHoja #numerosPagina span {
+	padding-top: 0.75em;
+	width: 1.4em;
+	display: block;
+	float: left;
+	height: 1.5em;
+}
+a.vinculoHoja #numerosPagina span:first-child {
+	border-right: solid black thin;
+}
+a.vinculoHoja #numerosPagina span:last-child {
+}
+a.vinculoHoja #numerosHoja {
+	border-top: solid black thin;
+	padding-top: 0.25em;
 }
 nav#paginas a{
 	float: left;
